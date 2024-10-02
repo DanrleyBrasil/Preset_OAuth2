@@ -38,6 +38,22 @@ public class AdminUserConfig implements CommandLineRunner {
     @Transactional
     public void run(String... args) throws Exception {
 
+
+        var roleAdminConfig = roleRepository.findByName(Role.Values.ADMIN.name());
+        if (roleAdminConfig == null) {
+            roleAdminConfig = new Role();
+            roleAdminConfig.setName(Role.Values.ADMIN.name());
+            roleRepository.save(roleAdminConfig);
+        }
+
+        // Verifica se a role USER já existe, caso contrário, cria a role USER
+        var roleUserConfig = roleRepository.findByName(Role.Values.USER.name());
+        if (roleUserConfig == null) {
+            roleUserConfig = new Role();
+            roleUserConfig.setName(Role.Values.USER.name());
+            roleRepository.save(roleUserConfig);
+        }
+
         var roleAdmin = roleRepository.findByName(Role.Values.ADMIN.name());
         var roleUser = roleRepository.findByName(Role.Values.USER.name());
 
