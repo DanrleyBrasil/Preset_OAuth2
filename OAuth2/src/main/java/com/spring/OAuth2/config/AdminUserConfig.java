@@ -11,9 +11,8 @@ import com.spring.OAuth2.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Set;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -38,12 +37,13 @@ public class AdminUserConfig implements CommandLineRunner {
     @Transactional
     public void run(String... args) throws Exception {
 
-
         var roleAdminConfig = roleRepository.findByName(Role.Values.ADMIN.name());
         if (roleAdminConfig == null) {
             roleAdminConfig = new Role();
             roleAdminConfig.setName(Role.Values.ADMIN.name());
             roleRepository.save(roleAdminConfig);
+        } else {
+            System.out.println("Role Admin ja existe");
         }
 
         // Verifica se a role USER já existe, caso contrário, cria a role USER
@@ -52,13 +52,12 @@ public class AdminUserConfig implements CommandLineRunner {
             roleUserConfig = new Role();
             roleUserConfig.setName(Role.Values.USER.name());
             roleRepository.save(roleUserConfig);
+        } else {
+            System.out.println("Role User ja existe");
         }
 
         var roleAdmin = roleRepository.findByName(Role.Values.ADMIN.name());
-        var roleUser = roleRepository.findByName(Role.Values.USER.name());
-
         var userAdmin = userRepository.findByUserEmail("admin@admin.com");
-        var userUser = userRepository.findByUserEmail("user@user.com");
 
         userAdmin.ifPresentOrElse(
                 user -> {
@@ -74,6 +73,8 @@ public class AdminUserConfig implements CommandLineRunner {
                 }
         );
 
+        var roleUser = roleRepository.findByName(Role.Values.USER.name());
+        var userUser = userRepository.findByUserEmail("user@user.com");
         userUser.ifPresentOrElse(
                 user -> {
                     System.out.println("user já existe");
