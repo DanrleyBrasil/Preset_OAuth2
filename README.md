@@ -1,5 +1,16 @@
 # Projeto - Configuração Inicial
 
+## Descrição do Projeto
+
+Este projeto é um preset que utiliza OAuth02 Resource para realizar a autenticação e geração de tokens jwt! 
+Foi criado com o objetivo de agilizar o start de API's usando Spring Boot! 
+
+## Características Gerais: 
+   - Autenticação JWT
+   - OAuth2
+   - Swagger embarcado e configurado
+   - Documentado com Javadoc
+
 ## Requisitos
 1. **Instale o JDK 21**  
    Este projeto requer o **Java 21**. Certifique-se de ter a versão correta instalada em seu ambiente.
