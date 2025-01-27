@@ -23,16 +23,32 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
+ * Controlador responsável pelo gerenciamento de usuários.
  *
- * @author Dan
+ * <p>
+ * Esta classe contém endpoints para criar novos usuários e listar os usuários
+ * existentes no sistema. O acesso às operações é controlado por permissões
+ * específicas.</p>
+ *
+ * <p>
+ * Os usuários criados recebem automaticamente a role básica de "USER".</p>
+ *
+ * @author danrleybrasil
  */
 @RestController
 public class UserController {
-    
+
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder passwordEncoder;
-    
+
+    /**
+     * Construtor da classe UserController.
+     *
+     * @param userRepository Repositório para gerenciar os dados de usuários.
+     * @param roleRepository Repositório para gerenciar as roles (permissões).
+     * @param passwordEncoder Codificador de senhas para armazenamento seguro.
+     */
     public UserController(UserRepository userRepository,
             RoleRepository roleRepository,
             BCryptPasswordEncoder passwordEncoder) {
@@ -40,36 +56,70 @@ public class UserController {
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
     }
-    
+
+    /**
+     * Endpoint para criar um novo usuário.
+     *
+     * <p>
+     * Este endpoint recebe os dados do novo usuário, verifica se o e-mail já
+     * está cadastrado e, caso contrário, cria um novo usuário com a role básica
+     * "USER".</p>
+     *
+     * @param dto Objeto {@link CreateUserDto} contendo os dados do novo
+     * usuário.
+     * @return {@link ResponseEntity} com status HTTP 200 (OK) em caso de
+     * sucesso.
+     * @throws ResponseStatusException Com status 422 (UNPROCESSABLE ENTITY)
+     * caso o e-mail já esteja cadastrado.
+     */
     @Transactional
     @PostMapping("/users")
     public ResponseEntity<Void> newUser(@RequestBody CreateUserDto dto) {
-        
+
         var basicRole = roleRepository.findByName(Role.Values.USER.name());
-        
+
         var userFromDb = userRepository.findByUserEmail(dto.userEmail());
         if (userFromDb.isPresent()) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
         }
-        
+
         var user = new User();
         user.setUsername(dto.userName());
         user.setUserEmail(dto.userEmail());
         user.setPassword(passwordEncoder.encode(dto.password()));
         user.setRoles(Set.of(basicRole));
-        
+
         userRepository.save(user);
-        
+
         return ResponseEntity.ok().build();
     }
-    
+
+    /**
+     * Endpoint para listar todos os usuários.
+     *
+     * <p>
+     * Este endpoint retorna uma lista com todos os usuários cadastrados no
+     * sistema. O acesso é restrito a usuários com a permissão
+     * "SCOPE_ADMIN".</p>
+     *
+     * @return {@link ResponseEntity} contendo a lista de usuários.
+     */
     @GetMapping("/users")
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity<List<User>> listUsers() {
         var users = userRepository.findAll();
         return ResponseEntity.ok(users);
     }
-    
+
+    /**
+     * Endpoint alternativo para listar todos os usuários.
+     *
+     * <p>
+     * Este endpoint retorna uma lista com todos os usuários cadastrados no
+     * sistema. O acesso é restrito a usuários com a permissão "SCOPE_USER".</p>
+     *
+     * @return {@link ResponseEntity} contendo a lista de usuários.
+     */
     @GetMapping("/users2")
     @PreAuthorize("hasAuthority('SCOPE_USER')")
     public ResponseEntity<List<User>> listUsersTwo() {

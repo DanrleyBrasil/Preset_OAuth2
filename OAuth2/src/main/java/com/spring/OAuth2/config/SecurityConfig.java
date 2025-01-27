@@ -4,13 +4,10 @@
  */
 package com.spring.OAuth2.config;
 
-import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,9 +25,24 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
+
 /**
+ * Classe de configuração de segurança responsável por gerenciar a autenticação
+ * e autorização na aplicação.
  *
- * @author Dan
+ * <p>
+ * Esta classe configura o Spring Security para implementar segurança baseada em
+ * JWT, com suporte a métodos protegidos e controle de acesso por roles.</p>
+ *
+ * <p>
+ * Além disso, define a política de sessão como stateless, desativa CSRF e
+ * configura o CORS.</p>
+ *
+ * @author danrleybrasil
  */
 @Configuration
 @EnableWebSecurity
@@ -39,14 +51,29 @@ public class SecurityConfig {
 
     @Value("${jwt.public.key}")
     private RSAPublicKey publicKey;
+
     @Value("${jwt.private.key}")
     private RSAPrivateKey privateKey;
 
+    /**
+     * Configura os caminhos que serão ignorados pelo filtro de segurança.
+     *
+     * @return Instância de {@link WebSecurityCustomizer} com as configurações
+     * de caminhos ignorados.
+     */
     @Bean
     WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers("/swagger-ui/**", "/v3/api-docs/**");
     }
 
+    /**
+     * Configura o filtro de segurança HTTP, definindo as regras de acesso,
+     * política de sessão, CORS e autenticação baseada em JWT.
+     *
+     * @param http Instância de {@link HttpSecurity}.
+     * @return Configuração do filtro de segurança.
+     * @throws Exception Caso ocorra algum erro na configuração.
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -71,11 +98,21 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * Configura o decodificador de tokens JWT utilizando a chave pública RSA.
+     *
+     * @return Instância de {@link JwtDecoder}.
+     */
     @Bean
     public JwtDecoder jwtDecoder() {
         return NimbusJwtDecoder.withPublicKey(publicKey).build();
     }
 
+    /**
+     * Configura o codificador de tokens JWT utilizando as chaves RSA.
+     *
+     * @return Instância de {@link JwtEncoder}.
+     */
     @Bean
     public JwtEncoder jwtEncoder() {
         JWK jwk = new RSAKey.Builder(this.publicKey).privateKey(privateKey).build();
@@ -83,9 +120,13 @@ public class SecurityConfig {
         return new NimbusJwtEncoder(jwks);
     }
 
+    /**
+     * Configura o codificador de senhas utilizando BCrypt.
+     *
+     * @return Instância de {@link BCryptPasswordEncoder}.
+     */
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
 }

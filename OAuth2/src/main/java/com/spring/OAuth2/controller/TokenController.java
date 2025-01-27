@@ -21,16 +21,27 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- *
- * @author Dan
+ * Controlador responsável pela geração de tokens JWT para autenticação de usuários.
+ * 
+ * <p>Este controlador contém o endpoint de login, que valida as credenciais do 
+ * usuário e retorna um token JWT, contendo as informações de autenticação e autorização.</p>
+ * 
+ * @author danrleybrasil
  */
 @RestController
 public class TokenController {
 
     private final JwtEncoder jwtEncoder;
     private final UserRepository userRepository;
-    private BCryptPasswordEncoder passwordEncoder;
+    private final BCryptPasswordEncoder passwordEncoder;
 
+    /**
+     * Construtor da classe TokenController.
+     * 
+     * @param jwtEncoder Codificador de tokens JWT.
+     * @param userRepository Repositório para acesso aos dados dos usuários.
+     * @param passwordEncoder Codificador de senhas.
+     */
     public TokenController(JwtEncoder jwtEncoder,
             UserRepository userRepository,
             BCryptPasswordEncoder passwordEncoder) {
@@ -39,6 +50,19 @@ public class TokenController {
         this.passwordEncoder = passwordEncoder;
     }
 
+    /**
+     * Endpoint de login para autenticação de usuários.
+     * 
+     * <p>Recebe as credenciais do usuário no corpo da requisição, verifica se o 
+     * e-mail e a senha estão corretos e retorna um token JWT em caso de sucesso.</p>
+     * 
+     * <p>O token contém informações como o emissor, o ID do usuário, o horário de emissão, 
+     * o tempo de expiração e as permissões (scopes) do usuário.</p>
+     * 
+     * @param loginRequest Objeto contendo as credenciais do usuário (e-mail e senha).
+     * @return Um {@link ResponseEntity} contendo o token JWT e o tempo de expiração.
+     * @throws BadCredentialsException Se o e-mail ou a senha forem inválidos.
+     */
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
         var user = userRepository.findByUserEmail(loginRequest.userEmail());
@@ -49,11 +73,13 @@ public class TokenController {
         var now = Instant.now();
         var expiresIn = 30000L;
 
+        // Obtém as permissões (scopes) do usuário
         var scopes = user.get().getRoles()
                 .stream()
                 .map(Role::getName)
                 .collect(Collectors.joining(" "));
 
+        // Cria as informações (claims) do token JWT
         var claims = JwtClaimsSet.builder()
                 .issuer("mybackend")
                 .subject(user.get().getUserId().toString())
@@ -62,6 +88,7 @@ public class TokenController {
                 .claim("scope", scopes)
                 .build();
 
+        // Codifica e gera o token JWT
         var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
 
         return ResponseEntity.ok(new LoginResponse(jwtValue, expiresIn));
