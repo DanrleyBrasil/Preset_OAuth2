@@ -54,7 +54,7 @@
 6. **Configuração do Banco de Dados**
     - O exemplo deste preset utiliza como base de dados `MySQL`. Ajuste o arquivo `pom.xml` de acordo com o seu projeto! 
     - Não esqueça também de configurar o arquivo `application.properties` para se comunicar com a base de dados adequada!
-    - 
+    - O trecho `spring.jpa.hibernate.ddl-auto=update` no arquivo `application.properties`deve ser removido ou alterado antes de pensar em colocar o projeto em produção
 
 
 ## Observações
