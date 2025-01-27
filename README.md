@@ -47,6 +47,15 @@
           ```
           -----BEGIN PUBLIC KEY-----
           ```
+5. **Configurando Usuário Admin Padrão**  
+    - Antes de executar o projeto se atente a classe `AdminUserConfig.java` pois nela são criados os usuários padrões! 
+    - Altere o usuário ADMIN padrão de acordo com a necessidade do seu projeto!
+
+6. **Configuração do Banco de Dados**
+    - O exemplo deste preset utiliza como base de dados `MySQL`. Ajuste o arquivo `pom.xml` de acordo com o seu projeto! 
+    - Não esqueça também de configurar o arquivo `application.properties` para se comunicar com a base de dados adequada!
+    - 
+
 
 ## Observações
 - Certifique-se de que as configurações estejam completas antes de iniciar o projeto.
