@@ -4,13 +4,9 @@
  */
 package com.spring.OAuth2.controller;
 
-import com.spring.OAuth2.controller.dto.CreateUserDto;
-import com.spring.OAuth2.entities.Role;
-import com.spring.OAuth2.entities.User;
-import com.spring.OAuth2.repository.RoleRepository;
-import com.spring.OAuth2.repository.UserRepository;
 import java.util.List;
 import java.util.Set;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,6 +17,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+
+import com.spring.OAuth2.controller.dto.CreateUserDto;
+import com.spring.OAuth2.entities.Role;
+import com.spring.OAuth2.entities.User;
+import com.spring.OAuth2.repository.RoleRepository;
+import com.spring.OAuth2.repository.UserRepository;
 
 /**
  * Controlador responsável pelo gerenciamento de usuários.
@@ -125,5 +127,37 @@ public class UserController {
     public ResponseEntity<List<User>> listUsersTwo() {
         var users = userRepository.findAll();
         return ResponseEntity.ok(users);
+    }
+
+
+    /**
+     * Endpoint alternativo para retornar um Hello World User.
+     *
+     * <p>
+     * Este endpoint retorna uma resposta básica de Hello World.
+     *  O acesso é restrito a usuários com a permissão "SCOPE_USER".</p>
+     *
+     * @return {String} contendo a Mensagem.
+     */
+    @GetMapping("/helloWorldUser")
+    @PreAuthorize("hasAuthority('SCOPE_USER')")
+    public String helloWorldUser() {
+        return "Hello World! User";
+    }
+
+
+    /**
+     * Endpoint alternativo para retornar um Hello World Admin.
+     *
+     * <p>
+     * Este endpoint retorna uma resposta básica de Hello World.
+     *  O acesso é restrito a usuários com a permissão "SCOPE_ADMIN".</p>
+     *
+     * @return {String} contendo a Mensagem.
+     */
+    @GetMapping("/helloWorldAdmin")
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    public String helloWorldAdmin() {
+        return "Hello World! Admin";
     }
 }
