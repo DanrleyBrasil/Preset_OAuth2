@@ -100,3 +100,5 @@ Foi criado com o objetivo de agilizar o start de API's usando Spring Boot!
 
 ## Dúvidas
 Para mais informações ou suporte, entre em contato com o time de desenvolvimento.
+
+## Acompanhe as novidades através das Releases
