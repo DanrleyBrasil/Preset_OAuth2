@@ -43,7 +43,7 @@ Foi criado com o objetivo de agilizar o start de API's usando Spring Boot!
         ```
      2. Gere a chave privada:  
         ```bash
-        openssl genrsa > app.key
+        openssl genpkey -algorithm RSA -out app.key -pkeyopt rsa_keygen_bits:2048
         ```
      3. Gere a chave pública com base na chave privada:  
         ```bash
