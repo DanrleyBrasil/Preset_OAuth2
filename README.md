@@ -12,7 +12,7 @@ Foi criado com o objetivo de agilizar o start de API's usando Spring Boot!
    - Documentado com Javadoc
 
 ## Requisitos
-1. **Instale o JDK 21**  
+1. **Instale o JDK 21 (Ou outra versão de sua preferencia / só não esqueça de alterar no pom.xml)**  
    Este projeto requer o **Java 21**. Certifique-se de ter a versão correta instalada em seu ambiente.
 
 2. **Configure as dependências do projeto**  
